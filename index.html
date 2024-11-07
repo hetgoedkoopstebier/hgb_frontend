@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Het Goedkoopste Bier</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+        <style>
+            
+            html {
+                line-height: 1.5;
+                -webkit-text-size-adjust: 100%;
+                -moz-tab-size: 4;
+                -o-tab-size: 4;
+                tab-size: 4;
+                font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+                font-feature-settings: normal;
+                font-variation-settings: normal
+            }
+            
+            .header-div {
+                text-align: center;
+                width: fit-content;
+                margin: 0 auto;
+                
+                padding-top: 32px
+            }
+            
+            .header-div h2 {
+                margin-bottom: 0px;
+            }
+            
+            .header-div p {
+                margin-top: 10px;
+            }
+            
+            .filter-div {
+                display: flex;
+                justify-content: space-between;
+                position: relative;
+                margin: 0 auto;
+                
+                padding-top: 16px;
+                padding-bottom: 32px;
+                
+                width: 100%;
+                max-width: 343px;
+            }
+            
+            .filter-div h2 {
+                font-weight: 400;
+                margin: 0.3rem 0.3rem 0.3rem 0.3rem;
+            }
+            
+            .background-grey {
+                --tw-bg-opacity: 1;
+                background-color: rgb(243 244 246 / var(--tw-bg-opacity));
+            }
+            
+            .rounded-lg {
+                border-radius: 0.5rem;
+            }
+            
+            .drop-shadow-lg {
+                box-shadow: 0 20px 8px -8px rgb(0 0 0 / .04), 0 6px 3px -3px rgb(0 0 0 / .1)
+            }
+            
+            .flex-column {
+                display: flex;
+                flex-direction: column;
+            }
+            
+            .two-lists-in-one {
+                justify-content: space-between;
+            }
+            
+            .background-blue {
+                --tw-bg-opacity: 1;
+                background-color: rgb(51 141 180 / var(--tw-bg-opacity));
+            }
+            
+            .text-white {
+                --tw-text-opacity: 1;
+                color: rgb(255 255 255 / var(--tw-text-opacity));
+                
+                font-size: 0.80rem;
+                line-height: 2rem;
+            }
+            
+            .round-borders {
+                border-top-left-radius: 0.5rem;
+                border-top-right-radius: 0.5rem;
+            }
+            
+            .filter-list {
+                padding-left: 0.2rem;
+                padding-right: 0.3rem;
+            }
+            
+            .list-margin-top {
+                margin-top: 0.5rem;
+            }
+            
+            .list-margin-top-no-bottom {
+                margin-top: 0.5rem;
+                margin-bottom: 0
+            }
+            
+            .list-margin-bottom {
+                margin-top: 0;
+                margin-bottom: 1rem;
+            }
+            
+            #fulltable {
+                text-align: center;
+                margin: 0 auto;
+                
+                width: 100%;
+                max-width: 343px;
+            }
+            
+            ul {
+                list-style: none;
+                padding: 0;
+            }
+            
+            table {
+                border-collapse: collapse;
+            }
+            
+            table, th, td {
+                border-top: 1px solid black;
+                border-bottom: 1px solid black;
+                border-left: 1px solid black;
+                border-right: 1px solid black;
+                padding: 6px;
+                text-align: left;
+            }
+            
+            tr:nth-child(even) {
+                background-color: #f2f2f2;
+            }
+            
+            th {
+                background-color: #f2f2f2;
+            }
+            
+            td img { 
+                display: block;
+            }
+            
+            .credits-div {
+                text-align: center;
+                width: fit-content;
+                margin: 0 auto;
+                
+                padding-top: 32px;
+                padding-bottom: 16px
+            }
+            
+        </style>
+    </head>
+    
+    <body>
+        <div id="hetgoedkoopstebier">
+              
+            <div class="header-div">
+                <h2>Het Goedkoopste Bier</h2>
+                <p>Prijzen zijn per liter en exclusief statiegeld!<br><a href="#" onclick="alert('Prijzen worden elke dag bijgewerkt.\nSuggesties voor nieuwe features zijn welkom!\nEmail: hetgoedkoopstebier@outlook.com'); return false;" target="_blank">Meer info</a></p>
+            </div>
+            
+            <div class="filter-div">
+                <div class="background-grey rounded-lg drop-shadow-lg flex-column">
+                    <div class="background-blue text-white round-borders">
+                        <h2>Winkel</h2>
+                    </div>
+                    <ul id="shop_list" class="filter-list list-margin-top">
+                        <li><label><input type="checkbox" @change="switch_after_select_all('shop')" checked="checked" id="selectAll_shops"> <b>Alles</b></label></li>
+                        <li v-for="shop_name in uniqueShops"><label><input type="checkbox" @change="switch_after_regular('shop')" checked="checked" :value="shop_name"> {{ shop_name }}</label></li>
+                    </ul>
+                </div>
+                
+                <div class="background-grey rounded-lg drop-shadow-lg flex-column">
+                    <div class="background-blue text-white round-borders">
+                        <h2>Biermerk</h2>
+                    </div>
+                    <ul id="brand_list" class="filter-list list-margin-top">
+                        <li><label><input type="checkbox" @change="switch_after_select_all('brand')" checked="checked" id="selectAll_brands"> <b>Alles</b></label></li>
+                        <li v-for="brand_name in uniqueBrands"><label><input type="checkbox" @change="switch_after_regular('brand')" checked="checked" :value="brand_name"> {{ brand_name }}</label></li>
+                    </ul>
+                </div>
+                
+                <div class="background-grey rounded-lg drop-shadow-lg flex-column two-lists-in-one">
+                    <div class="flex-column">
+                        <div class="background-blue text-white round-borders">
+                            <h2>Emballage</h2>
+                        </div>
+                        <ul id="container_list" class="filter-list list-margin-top-no-bottom">
+                            <li><label><input type="checkbox" @change="switch_after_select_all('container')" checked="checked" id="selectAll_containers"> <b>Alles</b></label></li>
+                            <li v-for="container_type in uniqueContainers"><label><input type="checkbox" @change="switch_after_regular('container')" checked="checked" :value="container_type"> {{ container_type }}</label></li>
+                        </ul>
+                    </div> 
+                    <ul id="bundle_list" class="filter-list list-margin-bottom">
+                        <li><label><input type="checkbox" @change="switch_after_select_all('bundle')" checked="checked" id="selectAll_bundles"> <b>Alles</b></label></li>
+                        <li v-for="bundle_type in bundle_type_sort_order"><label><input type="checkbox" @change="switch_after_regular('bundle')" checked="checked" :value="bundle_type"> {{ bundle_type }}</label></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <table id="fulltable">
+                
+                <thead>
+                    <tr id="tableheader">
+                        <th style="width: 60px">Winkel</th>
+                        <th style="width: 215px">Product</th>
+                        <th style="width: 32px">€/L</th>
+                    </tr>
+                </thead>
+                
+                <tbody>
+                    <tr v-for="beer_row in beer_data" :data-category-shop="beer_row.shop_name" :data-category-brand="beer_row.brand_name" :data-category-container="beer_row.container_type" :data-category-bundle="beer_row.bundle_type">
+                        
+                        <td style="width: 60px">
+                            <img :src="'./img/' + beer_row.shop_name + '.ico'" style="width: 60px">
+                        </td>
+                        
+                        <td style="width: 215px">
+                            <a :href="beer_row.link" target="_blank"> {{ beer_row.product_name }}</a>
+                        </td>
+                        
+                        <td style="width: 32px">
+                            {{ parseFloat(beer_row.price_in_euro_per_liter_excl_deposit).toFixed(2).replace('.', ',')}}
+                        </td>
+                        
+                    </tr>
+                </tbody>
+                
+            </table>
+            
+            <div class="credits-div">
+                <p>Idee, backend en infrastructuur door Seb</p>
+                <p>Frontend mede mogelijk gemaakt door Boris</p>
+                <p>Met dank aan de maker van <a href="https://www.checkjebon.nl/">checkjebon.nl</a></p>
+            </div>
+            
+        </div>
+        
+        <script>
+            
+            new Vue({
+                el: '#hetgoedkoopstebier',
+                data: {
+                    beer_data: [],
+                    bundle_type_sort_order: ['Krat', 'Tray', 'N-pack', 'Los']
+                },
+                computed: {
+                    uniqueShops() {
+                        const shops = this.beer_data.map(row => row.shop_name);
+                        return [...new Set(shops)].sort();
+                    },
+                    uniqueBrands() {
+                        const brands = this.beer_data.map(row => row.brand_name);
+                        return [...new Set(brands)].sort();
+                    },
+                    uniqueContainers() {
+                        const containers = this.beer_data.map(row => row.container_type);
+                        return [...new Set(containers)].sort();
+                    },
+                    uniqueBundles() {
+                        const bundles = this.beer_data.map(row => row.bundle_type);
+                        return [...new Set(bundles)].sort();
+                    }
+                },
+                mounted() {
+                    fetch('https://raw.githubusercontent.com/hetgoedkoopstebier/data/main/beer.json')
+                        .then(response => response.json())
+                        .then(data => {
+                            this.beer_data = data.filter(({is_skeer}) => is_skeer === 'no');
+                        })
+                        .catch(error => {
+                            console.error('Error fetching JSON:', error);
+                        });
+                },
+                methods: {
+                    
+                    filterTable() {
+                        
+                            const selectedShop = Array.from(document.querySelectorAll('#shop_list input[type="checkbox"]:checked'))
+                                .filter(cb => cb.value) // Filter out checkboxes without a value (e.g., the "Select All")
+                                .map(cb => cb.value);
+                            const selectedBrand = Array.from(document.querySelectorAll('#brand_list input[type="checkbox"]:checked'))
+                                .filter(cb => cb.value)
+                                .map(cb => cb.value);
+                            const selectedContainer = Array.from(document.querySelectorAll('#container_list input[type="checkbox"]:checked'))
+                                .filter(cb => cb.value)
+                                .map(cb => cb.value);
+                            const selectedBundle = Array.from(document.querySelectorAll('#bundle_list input[type="checkbox"]:checked'))
+                                .filter(cb => cb.value)
+                                .map(cb => cb.value);
+                            
+                            
+                            const rows = document.querySelectorAll('#fulltable tbody tr');
+                            
+                            odd_element = 1;
+                            
+                            for (let row of rows) {
+                                
+                                const matchesShop = selectedShop.includes(row.getAttribute('data-category-shop'));
+                                const matchesBrand = selectedBrand.includes(row.getAttribute('data-category-brand'));
+                                const matchesContainer = selectedContainer.includes(row.getAttribute('data-category-container'))
+                                const matchesBundle = selectedBundle.includes(row.getAttribute('data-category-bundle'))
+                                
+                                if (selectedShop.length === 0 && selectedBrand.length === 0 && selectedContainer.length === 0 && selectedBundle.length === 0) {
+                                    row.style.display = 'none'; // Hide all rows if no checkboxes are selected
+                                } else if (matchesShop && matchesBrand && matchesContainer && matchesBundle) {
+                                    row.style.display = 'table-row'; // Show row if it matches both filters
+                                    
+                                    if (odd_element == 1) {
+                                        row.style.backgroundColor = "#fff";
+                                        row.style.color = "#000";
+                                        odd_element = 0
+                                    } else {
+                                        row.style.backgroundColor = "#f1f1f1";
+                                        row.style.color = "#000";
+                                        odd_element = 1
+                                    }
+                                    
+                                } else {
+                                    row.style.display = 'none'; // Hide row if it doesn't match
+                                }
+                            };
+                    },
+                    
+                    switch_after_select_all(which_filter) {
+                        var ref = this
+                        
+                        const thisCheckBox = document.querySelectorAll(`#selectAll_${which_filter}s`);
+                        const allCheckboxes = document.querySelectorAll(`#${which_filter}_list input[type="checkbox"]:not(#selectAll_${which_filter}s)`);
+                        allCheckboxes.forEach(cb => cb.checked = thisCheckBox[0].checked);
+                        
+                        ref.filterTable();
+                        
+                    },
+                    
+                    switch_after_regular(which_filter) {
+                        var ref = this
+                        
+                        const allCheckboxes = document.querySelectorAll(`#${which_filter}_list input[type="checkbox"]:not(#selectAll_${which_filter}s)`);
+                        const allChecked = Array.from(allCheckboxes).every(cb => cb.checked);
+                        document.getElementById(`selectAll_${which_filter}s`).checked = allChecked;
+                        
+                        ref.filterTable()
+                    }
+                    
+                }
+            });
+            
+        </script>
+    </body>
+</html>
