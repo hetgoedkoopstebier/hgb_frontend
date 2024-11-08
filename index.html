@@ -41,7 +41,7 @@
                 margin: 0 auto;
                 
                 padding-top: 16px;
-                padding-bottom: 32px;
+                padding-bottom: 16px;
                 
                 width: 100%;
                 max-width: 343px;
@@ -109,6 +109,13 @@
             .list-margin-bottom {
                 margin-top: 0;
                 margin-bottom: 1rem;
+            }
+            
+            .misc-div {
+                text-align: center;
+                width: fit-content;
+                margin: 0 auto;
+                padding-bottom: 16px;
             }
             
             #fulltable {
@@ -207,6 +214,10 @@
                 </div>
             </div>
             
+            <div class="misc-div">
+                <label><input type="checkbox" id="b_brand_check" v-model="b_brand_checked">Laat ook <a href="#" onclick="alert('Alfa, Brouwers, Bud, De Klok, Dommelsch, Veltins'); return false;" target="_blank">B-merken</a> zien</label>
+            </div>
+            
             <table id="fulltable">
                 
                 <thead>
@@ -247,27 +258,30 @@
         
         <script>
             
-            new Vue({
+            const app = new Vue({
                 el: '#hetgoedkoopstebier',
                 data: {
                     beer_data: [],
-                    bundle_type_sort_order: ['Krat', 'Tray', 'N-pack', 'Los']
+                    beer_data_reduced: [],
+                    bundle_type_sort_order: ['Krat', 'Tray', 'N-pack', 'Los'],
+                    b_brand_checked: true,
+                    init_state: true
                 },
                 computed: {
                     uniqueShops() {
-                        const shops = this.beer_data.map(row => row.shop_name);
+                        const shops = this.beer_data_reduced.map(row => row.shop_name);
                         return [...new Set(shops)].sort();
                     },
                     uniqueBrands() {
-                        const brands = this.beer_data.map(row => row.brand_name);
+                        const brands = this.beer_data_reduced.map(row => row.brand_name);
                         return [...new Set(brands)].sort();
                     },
                     uniqueContainers() {
-                        const containers = this.beer_data.map(row => row.container_type);
+                        const containers = this.beer_data_reduced.map(row => row.container_type);
                         return [...new Set(containers)].sort();
                     },
                     uniqueBundles() {
-                        const bundles = this.beer_data.map(row => row.bundle_type);
+                        const bundles = this.beer_data_reduced.map(row => row.bundle_type);
                         return [...new Set(bundles)].sort();
                     }
                 },
@@ -275,86 +289,96 @@
                     fetch('https://raw.githubusercontent.com/hetgoedkoopstebier/data/main/beer.json')
                         .then(response => response.json())
                         .then(data => {
-                            this.beer_data = data.filter(({is_skeer}) => is_skeer === 'no');
+                            this.beer_data = data;
+                            this.beer_data_reduced = data.filter(({reduced_brand_name}) => reduced_brand_name != 'B-merk');
                         })
                         .catch(error => {
                             console.error('Error fetching JSON:', error);
                         });
                 },
+                updated() {
+                    if (this.init_state) {
+                        this.init_state = false;
+                        this.b_brand_checked = false;
+                    }
+                },
                 methods: {
                     
                     filterTable() {
                         
-                            const selectedShop = Array.from(document.querySelectorAll('#shop_list input[type="checkbox"]:checked'))
-                                .filter(cb => cb.value) // Filter out checkboxes without a value (e.g., the "Select All")
-                                .map(cb => cb.value);
-                            const selectedBrand = Array.from(document.querySelectorAll('#brand_list input[type="checkbox"]:checked'))
-                                .filter(cb => cb.value)
-                                .map(cb => cb.value);
-                            const selectedContainer = Array.from(document.querySelectorAll('#container_list input[type="checkbox"]:checked'))
-                                .filter(cb => cb.value)
-                                .map(cb => cb.value);
-                            const selectedBundle = Array.from(document.querySelectorAll('#bundle_list input[type="checkbox"]:checked'))
-                                .filter(cb => cb.value)
-                                .map(cb => cb.value);
+                        const selectedShop = Array.from(document.querySelectorAll('#shop_list input[type="checkbox"]:checked'))
+                            .filter(cb => cb.value) // Filter out checkboxes without a value (e.g., the "Select All")
+                            .map(cb => cb.value);
+                        const selectedBrand = Array.from(document.querySelectorAll('#brand_list input[type="checkbox"]:checked'))
+                            .filter(cb => cb.value)
+                            .map(cb => cb.value);
+                        const selectedContainer = Array.from(document.querySelectorAll('#container_list input[type="checkbox"]:checked'))
+                            .filter(cb => cb.value)
+                            .map(cb => cb.value);
+                        const selectedBundle = Array.from(document.querySelectorAll('#bundle_list input[type="checkbox"]:checked'))
+                            .filter(cb => cb.value)
+                            .map(cb => cb.value);
+                        
+                        const selected_b_brand = this.b_brand_checked;
+                        
+                        const rows = document.querySelectorAll('#fulltable tbody tr');
+                        
+                        odd_element = 1;
+                        
+                        for (let row of rows) {
                             
+                            const matchesShop      = selectedShop.includes(     row.getAttribute('data-category-shop'));
+                            const matchesBrand     = selectedBrand.includes(    row.getAttribute('data-category-brand'));
+                            const matchesContainer = selectedContainer.includes(row.getAttribute('data-category-container'))
+                            const matchesBundle    = selectedBundle.includes(   row.getAttribute('data-category-bundle'))
                             
-                            const rows = document.querySelectorAll('#fulltable tbody tr');
+                            const matches_filters = (matchesShop && matchesBrand && matchesContainer && matchesBundle)
                             
-                            odd_element = 1;
-                            
-                            for (let row of rows) {
+                            if (matches_filters || selected_b_brand) {
+                                row.style.display = 'table-row'; // Show row if it matches both filters
                                 
-                                const matchesShop = selectedShop.includes(row.getAttribute('data-category-shop'));
-                                const matchesBrand = selectedBrand.includes(row.getAttribute('data-category-brand'));
-                                const matchesContainer = selectedContainer.includes(row.getAttribute('data-category-container'))
-                                const matchesBundle = selectedBundle.includes(row.getAttribute('data-category-bundle'))
-                                
-                                if (selectedShop.length === 0 && selectedBrand.length === 0 && selectedContainer.length === 0 && selectedBundle.length === 0) {
-                                    row.style.display = 'none'; // Hide all rows if no checkboxes are selected
-                                } else if (matchesShop && matchesBrand && matchesContainer && matchesBundle) {
-                                    row.style.display = 'table-row'; // Show row if it matches both filters
-                                    
-                                    if (odd_element == 1) {
-                                        row.style.backgroundColor = "#fff";
-                                        row.style.color = "#000";
-                                        odd_element = 0
-                                    } else {
-                                        row.style.backgroundColor = "#f1f1f1";
-                                        row.style.color = "#000";
-                                        odd_element = 1
-                                    }
-                                    
+                                if (odd_element == 1) {
+                                    row.style.backgroundColor = "#fff";
+                                    row.style.color = "#000";
+                                    odd_element = 0
                                 } else {
-                                    row.style.display = 'none'; // Hide row if it doesn't match
+                                    row.style.backgroundColor = "#f1f1f1";
+                                    row.style.color = "#000";
+                                    odd_element = 1
                                 }
-                            };
+                                
+                            } else {
+                                row.style.display = 'none'; // Hide row if it doesn't match
+                            }
+                        };
                     },
                     
                     switch_after_select_all(which_filter) {
-                        var ref = this
+                        var ref = this;
                         
                         const thisCheckBox = document.querySelectorAll(`#selectAll_${which_filter}s`);
                         const allCheckboxes = document.querySelectorAll(`#${which_filter}_list input[type="checkbox"]:not(#selectAll_${which_filter}s)`);
                         allCheckboxes.forEach(cb => cb.checked = thisCheckBox[0].checked);
                         
                         ref.filterTable();
-                        
                     },
                     
                     switch_after_regular(which_filter) {
-                        var ref = this
+                        var ref = this;
                         
                         const allCheckboxes = document.querySelectorAll(`#${which_filter}_list input[type="checkbox"]:not(#selectAll_${which_filter}s)`);
                         const allChecked = Array.from(allCheckboxes).every(cb => cb.checked);
                         document.getElementById(`selectAll_${which_filter}s`).checked = allChecked;
                         
-                        ref.filterTable()
+                        ref.filterTable();
+                    },
+                },
+                watch: {
+                    b_brand_checked() {
+                        this.filterTable();
                     }
-                    
                 }
             });
-            
         </script>
     </body>
 </html>
