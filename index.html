@@ -181,19 +181,19 @@
                     <div class="background-blue text-white round-borders">
                         <h2>Winkel</h2>
                     </div>
-                    <ul id="shop_list" class="filter-list list-margin-top">
-                        <li><label><input type="checkbox" @change="switch_after_select_all('shop')" checked="checked" id="selectAll_shops"> <b>Alles</b></label></li>
-                        <li v-for="shop_name in uniqueShops"><label><input type="checkbox" @change="switch_after_regular('shop')" checked="checked" :value="shop_name"> {{ shop_name }}</label></li>
+                    <ul id="shop_name_list" class="filter-list list-margin-top">
+                        <li>                                 <label><input type="checkbox" @change="switch_after_select_all('shop_name')" checked="checked" value="shop_name__select_all"> <b>Alles</b></label></li>
+                        <li v-for="shop_name in uniqueShops"><label><input type="checkbox" @change="switch_after_regular('shop_name')"    checked="checked" :value="shop_name"> {{ shop_name }}</label></li>
                     </ul>
                 </div>
                 
-                <div class="background-grey rounded-lg drop-shadow-lg flex-column">
+                <div class="background-grey rounde-dlg drop-shadow-lg flex-column">
                     <div class="background-blue text-white round-borders">
                         <h2>Biermerk</h2>
                     </div>
-                    <ul id="brand_list" class="filter-list list-margin-top">
-                        <li><label><input type="checkbox" @change="switch_after_select_all('brand')" checked="checked" id="selectAll_brands"> <b>Alles</b></label></li>
-                        <li v-for="brand_name in uniqueBrands"><label><input type="checkbox" @change="switch_after_regular('brand')" checked="checked" :value="brand_name"> {{ brand_name }}</label></li>
+                    <ul id="brand_name_list" class="filter-list list-margin-top">
+                        <li>                                    <label><input type="checkbox" @change="switch_after_select_all('brand_name')" checked="checked" value="brand_name__select_all"> <b>Alles</b></label></li>
+                        <li v-for="brand_name in uniqueBrandsA"><label><input type="checkbox" @change="switch_after_regular('brand_name')"    checked="checked" :value="brand_name"> {{ brand_name }}</label></li>
                     </ul>
                 </div>
                 
@@ -202,14 +202,14 @@
                         <div class="background-blue text-white round-borders">
                             <h2>Emballage</h2>
                         </div>
-                        <ul id="container_list" class="filter-list list-margin-top-no-bottom">
-                            <li><label><input type="checkbox" @change="switch_after_select_all('container')" checked="checked" id="selectAll_containers"> <b>Alles</b></label></li>
-                            <li v-for="container_type in uniqueContainers"><label><input type="checkbox" @change="switch_after_regular('container')" checked="checked" :value="container_type"> {{ container_type }}</label></li>
+                        <ul id="container_type_list" class="filter-list list-margin-top-no-bottom">
+                            <li>                                           <label><input type="checkbox" @change="switch_after_select_all('container_type')" checked="checked" value="container_type__select_all"> <b>Alles</b></label></li>
+                            <li v-for="container_type in uniqueContainers"><label><input type="checkbox" @change="switch_after_regular('container_type')"    checked="checked" :value="container_type"> {{ container_type }}</label></li>
                         </ul>
                     </div> 
-                    <ul id="bundle_list" class="filter-list list-margin-bottom">
-                        <li><label><input type="checkbox" @change="switch_after_select_all('bundle')" checked="checked" id="selectAll_bundles"> <b>Alles</b></label></li>
-                        <li v-for="bundle_type in bundle_type_sort_order"><label><input type="checkbox" @change="switch_after_regular('bundle')" checked="checked" :value="bundle_type"> {{ bundle_type }}</label></li>
+                    <ul id="bundle_type_list" class="filter-list list-margin-bottom">
+                        <li>                                              <label><input type="checkbox" @change="switch_after_select_all('bundle_type')" checked="checked" value="bundle_type__select_all"> <b>Alles</b></label></li>
+                        <li v-for="bundle_type in bundle_type_sort_order"><label><input type="checkbox" @change="switch_after_regular('bundle_type')"    checked="checked" :value="bundle_type"> {{ bundle_type }}</label></li>
                     </ul>
                 </div>
             </div>
@@ -262,26 +262,32 @@
                 el: '#hetgoedkoopstebier',
                 data: {
                     beer_data: [],
-                    beer_data_reduced: [],
+                    beer_data_a_merk: [],
+                    beer_data_b_merk: [],
                     bundle_type_sort_order: ['Krat', 'Tray', 'N-pack', 'Los'],
                     b_brand_checked: true,
-                    init_state: true
+                    init_state: true,
+                    init_link: window.location.href.split('?')[0]
                 },
                 computed: {
                     uniqueShops() {
-                        const shops = this.beer_data_reduced.map(row => row.shop_name);
+                        const shops = this.beer_data_a_merk.map(row => row.shop_name);
                         return [...new Set(shops)].sort();
                     },
-                    uniqueBrands() {
-                        const brands = this.beer_data_reduced.map(row => row.brand_name);
+                    uniqueBrandsA() {
+                        const brands = this.beer_data_a_merk.map(row => row.brand_name);
+                        return [...new Set(brands)].sort();
+                    },
+                    uniqueBrandsB() {
+                        const brands = this.beer_data_b_merk.map(row => row.brand_name);
                         return [...new Set(brands)].sort();
                     },
                     uniqueContainers() {
-                        const containers = this.beer_data_reduced.map(row => row.container_type);
+                        const containers = this.beer_data_a_merk.map(row => row.container_type);
                         return [...new Set(containers)].sort();
                     },
                     uniqueBundles() {
-                        const bundles = this.beer_data_reduced.map(row => row.bundle_type);
+                        const bundles = this.beer_data_a_merk.map(row => row.bundle_type);
                         return [...new Set(bundles)].sort();
                     }
                 },
@@ -290,36 +296,95 @@
                         .then(response => response.json())
                         .then(data => {
                             this.beer_data = data;
-                            this.beer_data_reduced = data.filter(({reduced_brand_name}) => reduced_brand_name != 'B-merk');
+                            this.beer_data_a_merk = data.filter(({reduced_brand_name}) => reduced_brand_name != 'B-merk');
+                            this.beer_data_b_merk = data.filter(({reduced_brand_name}) => reduced_brand_name == 'B-merk');
                         })
                         .catch(error => {
                             console.error('Error fetching JSON:', error);
                         });
                 },
                 updated() {
+                    
                     if (this.init_state) {
+                        
                         this.init_state = false;
-                        this.b_brand_checked = false;
+                        
+                        const urlParams = new URLSearchParams(window.location.search);
+                        
+                        var myMap = new Map();
+                        myMap.set('shop_name',      this.uniqueShops);
+                        myMap.set('brand_name',     this.uniqueBrandsA);
+                        myMap.set('container_type', this.uniqueContainers);
+                        myMap.set('bundle_type',    this.uniqueBundles);
+                        
+                        for (const [key, unique_array] of myMap.entries()) {
+                            
+                            const selected_elements = urlParams.get(key);
+                            
+                            if (selected_elements) {
+                                
+                                const full_set    = new Set(unique_array);
+                                const markThese   = new Set(selected_elements.split(','));
+                                const unmarkThese = full_set.difference(markThese);
+                                                            
+                                unmarkThese.forEach(function (theValue) {
+                                    document.querySelector(`input[type="checkbox"][value="${theValue.replace('_', ' ')}"]`).checked = false;
+                                });
+                                
+                                document.querySelector(`input[type="checkbox"][value="${key}__select_all"]`).checked = false;
+                                
+                            }
+                        }
+                        
+                        if (!urlParams.has('b_merk')) {
+                            this.b_brand_checked = false;
+                        }
+                        
                     }
                 },
                 methods: {
                     
                     filterTable() {
                         
-                        const selectedShop = Array.from(document.querySelectorAll('#shop_list input[type="checkbox"]:checked'))
-                            .filter(cb => cb.value) // Filter out checkboxes without a value (e.g., the "Select All")
+                        const selectedShops = Array.from(document.querySelectorAll('#shop_name_list input[type="checkbox"]:checked'))
+                            .filter(cb => cb.id != "shop_name__select_all")
                             .map(cb => cb.value);
-                        const selectedBrand = Array.from(document.querySelectorAll('#brand_list input[type="checkbox"]:checked'))
-                            .filter(cb => cb.value)
+                        const selectedBrands = Array.from(document.querySelectorAll('#brand_name_list input[type="checkbox"]:checked'))
+                            .filter(cb => cb.id != "brand_name__select_all")
                             .map(cb => cb.value);
-                        const selectedContainer = Array.from(document.querySelectorAll('#container_list input[type="checkbox"]:checked'))
-                            .filter(cb => cb.value)
+                        const selectedContainers = Array.from(document.querySelectorAll('#container_type_list input[type="checkbox"]:checked'))
+                            .filter(cb => cb.id != "container_type__select_all")
                             .map(cb => cb.value);
-                        const selectedBundle = Array.from(document.querySelectorAll('#bundle_list input[type="checkbox"]:checked'))
-                            .filter(cb => cb.value)
+                        const selectedBundles = Array.from(document.querySelectorAll('#bundle_type_list input[type="checkbox"]:checked'))
+                            .filter(cb => cb.id != "bundle_type__select_all")
                             .map(cb => cb.value);
                         
-                        const selected_b_brand = this.b_brand_checked;
+                        const selected_b_brands = this.b_brand_checked;
+                        
+                        var url_append = [];
+                        if (selectedShops.length > 0 && (selectedBrands.length > 0 || selected_b_brands) && selectedContainers.length > 0 && selectedBundles.length > 0) {
+                            
+                            if (!document.querySelector(`input[type="checkbox"][value="shop_name__select_all"]`).checked) {
+                                url_append.push("shop_name=" + selectedShops.join(",").replace(" ", "_"));
+                            };
+                            if (!document.querySelector(`input[type="checkbox"][value="brand_name__select_all"]`).checked && selectedBrands.length > 0) {
+                                url_append.push("brand_name=" + selectedBrands.join(",").replace(" ", "_"));
+                            };
+                            if (!document.querySelector(`input[type="checkbox"][value="container_type__select_all"]`).checked) {
+                                url_append.push("container_type=" + selectedContainers.join(",").replace(" ", "_"));
+                            };
+                            if (!document.querySelector(`input[type="checkbox"][value="bundle_type__select_all"]`).checked) {
+                                url_append.push("bundle_type=" + selectedBundles.join(",").replace(" ", "_"));
+                            };
+                            
+                        };
+                        
+                        if (selectedShops.length > 0 && selected_b_brands && selectedContainers.length > 0 && selectedBundles.length > 0) {
+                            url_append.push("b_merk=yes");
+                        };
+                            
+                        url_appendix = (url_append.length > 0) ? "?" + url_append.join("&") : this.init_link;
+                        window.history.replaceState(null, null, url_appendix);
                         
                         const rows = document.querySelectorAll('#fulltable tbody tr');
                         
@@ -327,15 +392,14 @@
                         
                         for (let row of rows) {
                             
-                            const matchesShop      = selectedShop.includes(     row.getAttribute('data-category-shop'));
-                            const matchesBrand     = selectedBrand.includes(    row.getAttribute('data-category-brand'));
-                            const matchesContainer = selectedContainer.includes(row.getAttribute('data-category-container'))
-                            const matchesBundle    = selectedBundle.includes(   row.getAttribute('data-category-bundle'))
+                            const matchesShop      = selectedShops.includes(     row.getAttribute('data-category-shop'));
+                            const matchesBrandA    = selectedBrands.includes(    row.getAttribute('data-category-brand'));
+                            const matchesContainer = selectedContainers.includes(row.getAttribute('data-category-container'));
+                            const matchesBundle    = selectedBundles.includes(   row.getAttribute('data-category-bundle'));
+                            const matchesBrandB    = (selected_b_brands && this.uniqueBrandsB.includes(row.getAttribute('data-category-brand')));
                             
-                            const matches_filters = (matchesShop && matchesBrand && matchesContainer && matchesBundle)
-                            
-                            if (matches_filters || selected_b_brand) {
-                                row.style.display = 'table-row'; // Show row if it matches both filters
+                            if (matchesShop && (matchesBrandA || matchesBrandB) && matchesContainer && matchesBundle) {
+                                row.style.display = 'table-row';
                                 
                                 if (odd_element == 1) {
                                     row.style.backgroundColor = "#fff";
@@ -348,17 +412,18 @@
                                 }
                                 
                             } else {
-                                row.style.display = 'none'; // Hide row if it doesn't match
+                                row.style.display = 'none';
                             }
                         };
+                        
                     },
                     
                     switch_after_select_all(which_filter) {
                         var ref = this;
                         
-                        const thisCheckBox = document.querySelectorAll(`#selectAll_${which_filter}s`);
-                        const allCheckboxes = document.querySelectorAll(`#${which_filter}_list input[type="checkbox"]:not(#selectAll_${which_filter}s)`);
-                        allCheckboxes.forEach(cb => cb.checked = thisCheckBox[0].checked);
+                        const thisCheckBox = document.querySelector(`input[type="checkbox"][value="${which_filter}__select_all"]`);
+                        const allCheckboxes = document.querySelectorAll(`#${which_filter}_list input[type="checkbox"]:not([value="${which_filter}__select_all"])`);
+                        allCheckboxes.forEach(cb => cb.checked = thisCheckBox.checked);
                         
                         ref.filterTable();
                     },
@@ -366,9 +431,9 @@
                     switch_after_regular(which_filter) {
                         var ref = this;
                         
-                        const allCheckboxes = document.querySelectorAll(`#${which_filter}_list input[type="checkbox"]:not(#selectAll_${which_filter}s)`);
+                        const allCheckboxes = document.querySelectorAll(`#${which_filter}_list input[type="checkbox"]:not([value="${which_filter}__select_all"])`);
                         const allChecked = Array.from(allCheckboxes).every(cb => cb.checked);
-                        document.getElementById(`selectAll_${which_filter}s`).checked = allChecked;
+                        document.querySelector(`input[type="checkbox"][value="${which_filter}__select_all"]`).checked = allChecked;
                         
                         ref.filterTable();
                     },
