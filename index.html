@@ -4,6 +4,7 @@
         <title>Het Goedkoopste Bier</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="Selecteer jouw favoriete biermerken en supermarkten en zie meteen welke combinatie het goedkoopst is!">
         <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
         <style>
             
@@ -179,7 +180,7 @@
             <div class="filter-div">
                 <div class="background-grey rounded-lg drop-shadow-lg flex-column">
                     <div class="background-blue text-white round-borders">
-                        <h2>Winkel</h2>
+                        <h2>Supermarkt</h2>
                     </div>
                     <ul id="shop_name_list" class="filter-list list-margin-top">
                         <li>                                 <label><input type="checkbox" @change="switch_after_select_all('shop_name')" checked="checked" value="shop_name__select_all"> <b>Alles</b></label></li>
@@ -232,7 +233,7 @@
                     <tr v-for="beer_row in beer_data" :data-category-shop="beer_row.shop_name" :data-category-brand="beer_row.brand_name" :data-category-container="beer_row.container_type" :data-category-bundle="beer_row.bundle_type">
                         
                         <td style="width: 60px">
-                            <img :src="'./img/' + beer_row.shop_name + '.ico'" style="width: 60px">
+                            <img :src="'./img/' + beer_row.shop_name + '.ico'" :alt="'Het logo van ' + beer_row.shop_name" style="width: 60px">
                         </td>
                         
                         <td style="width: 215px">
