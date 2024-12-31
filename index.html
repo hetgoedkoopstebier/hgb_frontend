@@ -216,7 +216,7 @@
             </div>
             
             <div class="misc-div">
-                <label><input type="checkbox" id="b_brand_check" v-model="b_brand_checked">Laat ook <a href="#" onclick="alert('Alfa, Brouwers, Bud, De Klok, Dommelsch, Veltins'); return false;" target="_blank">B-merken</a> zien</label>
+                <label><input type="checkbox" id="b_brand_check" v-model="b_brand_checked">Laat ook <a href="#" onclick="alert('Alfa, Brouwers, Bud, De Klok, Dommelsch, Schultenbrau, Veltins'); return false;" target="_blank">B-merken</a> zien</label>
             </div>
             
             <table id="fulltable">
@@ -272,7 +272,7 @@
                 },
                 computed: {
                     uniqueShops() {
-                        const shops = this.beer_data_a_merk.map(row => row.shop_name);
+                        const shops = this.beer_data.map(row => row.shop_name);
                         return [...new Set(shops)].sort();
                     },
                     uniqueBrandsA() {
@@ -284,11 +284,11 @@
                         return [...new Set(brands)].sort();
                     },
                     uniqueContainers() {
-                        const containers = this.beer_data_a_merk.map(row => row.container_type);
+                        const containers = this.beer_data.map(row => row.container_type);
                         return [...new Set(containers)].sort();
                     },
                     uniqueBundles() {
-                        const bundles = this.beer_data_a_merk.map(row => row.bundle_type);
+                        const bundles = this.beer_data.map(row => row.bundle_type);
                         return [...new Set(bundles)].sort();
                     }
                 },
