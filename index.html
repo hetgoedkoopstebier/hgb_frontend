@@ -197,7 +197,7 @@
                     </ul>
                 </div>
                 
-                <div class="background-grey rounde-dlg drop-shadow-lg flex-column">
+                <div class="background-grey rounded-lg drop-shadow-lg flex-column">
                     <div class="background-blue text-white round-borders">
                         <h2>Biermerk</h2>
                     </div>
@@ -302,7 +302,7 @@
                     }
                 },
                 mounted() {
-                    fetch('https://raw.githubusercontent.com/hetgoedkoopstebier/data/main/beer.json')
+                    fetch('https://raw.githubusercontent.com/hetgoedkoopstebier/hgb_data/main/beer.json')
                         .then(response => response.json())
                         .then(data => {
                             this.beer_data = data;
